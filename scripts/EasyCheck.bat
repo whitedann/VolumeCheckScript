@@ -1,0 +1,1 @@
+python.exe c:\\Users\Dan\Desktop\idtdocs\docPrep.py %*
