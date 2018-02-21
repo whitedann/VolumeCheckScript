@@ -10,12 +10,9 @@ from openpyxl import Workbook
 from openpyxl import load_workbook
 from openpyxl.compat import range
 import getpass
-
 print('done!')
-print('w:\\Employees\\Danny\dev for more info\n')
 
-
-def start():
+def init():
     global user
     global password
     global barcode
@@ -39,10 +36,14 @@ def getTemplate():
     with requests.Session() as s:
         p = s.post('https://idtdna.mastercontrol.com/mc/login/index.cfm?action=login',data=payload)
         r = s.get('https://idtdna.mastercontrol.com/mc/Main/MASTERControl/Organizer/view_file.cfm?id=XBCYSHLULRA4XBIBB7')
-        output = open('template.xlsx','wb')
-        output.write(r.content)
-        output.close()
-    return;
+        if len(r.content) < 10000:
+            print('Could not connect to Master Control user/password may be incorrect')
+            start()
+        else:
+            output = open('template.xlsx','wb')
+            output.write(r.content)
+            output.close()
+        return;
 
 #get volume file
 def getVolumeInfo():
@@ -74,16 +75,22 @@ def copyData():
     template.save(filename = output1)
     template.close()
     return;
-    
+
+def start():
+    init()
+    getTemplate()
+    getVolumeInfo()
+    copyData()
+
+    os.remove('template.xlsx')
+    os.remove('volumeInfo.xls')
+
+    file = output1
+    os.startfile(file)
+    start()
+    return;
+
+
 start()
-getTemplate()
-getVolumeInfo()
-copyData()
-
-os.remove('template.xlsx')
-os.remove('volumeInfo.xls')
-
-file = output1
-os.startfile(file)
 
 
