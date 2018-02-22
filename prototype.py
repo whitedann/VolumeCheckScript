@@ -27,7 +27,7 @@ def init():
 
     #Home directory
     #os.chdir('C:\\Users\Dan\Desktop\idtdocs')
-    return;
+    return 0;
 
 #get template file
 def getTemplate():
@@ -43,15 +43,19 @@ def getTemplate():
             output = open('template.xlsx','wb')
             output.write(r.content)
             output.close()
-        return;
+        return 0;
 
 #get volume file
 def getVolumeInfo():
     url = 'http://ssrsreports.idtdna.com/REPORTServer/Pages/ReportViewer.aspx?%2fManufacturing%2fSan+Diego%2fPlate+Volume+Information+by+Barcode+ID&rs:Command=Render&BarcodeID='
     url += barcode
     report = sspyrs.report(url,user,password)
-    report.directdown('volumeInfo','EXCEL')
-    return;
+    try:
+        report.directdown('volumeInfo','EXCEL')
+    except ValueError:
+        print('\n\nFailed to download volume file. Check that barcode is correct.\n')
+        start()
+    return 0;
 
 #copy data
 def copyData():
@@ -62,33 +66,41 @@ def copyData():
     start = template.active
     start.cell(row=1,column=2).value = barcode
     start.cell(row=1,column=9).value = user
-    #start.close()
 
     source = info.sheet_by_index(0)
-    dest = template['Raw Data']
+    checkString = source.cell(0,0).value
+    delimitedString = checkString.split(' ')
+    if(delimitedString[8] == ''):
+        print('invalid barcode')
+        return 1;
+    else:
+        dest = template['Raw Data']
 
-    for row in range(2,source.nrows):
-        for col in range(0,6):
-            dest.cell(column=col+1, row=(row-1)).value = source.cell(row,col).value
+        for row in range(2,source.nrows):
+            for col in range(0,6):
+                dest.cell(column=col+1, row=(row-1)).value = source.cell(row,col).value
 
-    output1 = customer + '_' + barcode + '.xlsx'
-    template.save(filename = output1)
-    template.close()
-    return;
+        output1 = customer + '_' + barcode + '.xlsx'
+        template.save(filename = output1)
+        template.close()
+    return 0;
 
 def start():
+
     init()
     getTemplate()
     getVolumeInfo()
-    copyData()
 
-    os.remove('template.xlsx')
+    if(copyData() == 0):
+        file = output1
+        os.startfile(file)
+        start()
+        print('Success')
+    else:
+        start()
     os.remove('volumeInfo.xls')
-
-    file = output1
-    os.startfile(file)
-    start()
-    return;
+    os.remove('template.xlsx')
+    return 0;
 
 
 start()
