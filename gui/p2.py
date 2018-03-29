@@ -8,11 +8,10 @@ from openpyxl import Workbook
 from openpyxl import load_workbook
 from openpyxl.compat import range
 import getpass
-import time
 
 class Builder:
 
-    def __init__(self,barcode=None,customer=None):
+    def __init__(self,barcode,customer):
         self.barcode = barcode
         self.customer = customer
         
@@ -34,7 +33,6 @@ class Builder:
     #collects login info and starts session timer
     def login(self):
 
-        self.sessionBegin = time.time()
         self.user = input('type user (don\'t scan badge): ')
         self.password = getpass.getpass('type password (hidden): ')
     
@@ -125,31 +123,16 @@ class Builder:
             print('Logged in as ' + self.user)
             return 0;
         else:
-            self.isRunning = False
             return 1;
-
-    def userTimeout(self):
-        self.sessionEnd = time.time()
-        if(self.sessionEnd-self.sessionBegin > 120):
-            return True;
-        else:
-            return False;
     
 
     def start(self):
         self.login()
-        self.isRunning = True
-        while(self.isRunning):
-            if(self.userTimeout()):
-                self.login()
-            else:
-                self.run()
+        self.run()
         #shutdown()
         os.remove('volumeInfo.xls')
         os.remove('template.xlsx')
 
-a = Builder('123123','123123213')
-a.start()
 
 
 
