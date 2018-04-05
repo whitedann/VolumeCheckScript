@@ -11,9 +11,11 @@ import getpass
 
 class Builder:
 
-    def __init__(self,barcode,customer):
+    def __init__(self,barcode,customer,user,password):
         self.barcode = barcode
         self.customer = customer
+        self.user = user
+        self.password = password
         
         
     #collects query info from user and changes working directory 
@@ -33,8 +35,10 @@ class Builder:
     #collects login info and starts session timer
     def login(self):
 
-        self.user = input('type user (don\'t scan badge): ')
-        self.password = getpass.getpass('type password (hidden): ')
+        #self.user = input('type user (don\'t scan badge): ')
+        #self.password = getpass.getpass('type password (hidden): ')
+        #self.user = user
+        #self.password = password
     
         return 0;
 
@@ -127,12 +131,14 @@ class Builder:
     
 
     def start(self):
-        self.login()
+        #self.login()
         self.run()
         #shutdown()
         os.remove('volumeInfo.xls')
         os.remove('template.xlsx')
 
+#x = Builder('2640488','Invitae','dwhite','Owner4504')
+#x.start()
 
 
 
